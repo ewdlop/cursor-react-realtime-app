@@ -59,7 +59,7 @@ const DataDistribution: React.FC = () => {
               value: item.value,
               label: item.category,
             })),
-            highlightScope: { fade: 'global', highlight: 'item' },
+            highlightScope: { faded: 'global', highlighted: 'item' },
             faded: { innerRadius: 30, additionalRadius: -30 },
           },
         ]}
