@@ -2,12 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { Paper, Typography, Box, Divider } from '@mui/material';
 import { useSocket } from '../contexts/SocketContext';
 
+interface SensorData {
+  temperature: number;
+  humidity: number;
+  pressure: number;
+  voltage: number;
+  current: number;
+  power: number;
+  timestamp: string;
+}
+
 interface ComparisonData {
   current: number;
   previous: number;
   change: number;
   percentage: number;
   period: string;
+  type: string;
 }
 
 const DataComparison: React.FC = () => {
@@ -16,7 +27,8 @@ const DataComparison: React.FC = () => {
     previous: 0,
     change: 0,
     percentage: 0,
-    period: '1分钟'
+    period: '1分钟',
+    type: '温度'
   });
   const socket = useSocket();
 
@@ -24,29 +36,30 @@ const DataComparison: React.FC = () => {
     let previousValue = 0;
     let lastUpdateTime = Date.now();
 
-    socket.on('dataUpdate', (newData: { value: number }) => {
+    socket.on('sensorData', (newData: SensorData) => {
       const now = Date.now();
       const timeDiff = now - lastUpdateTime;
       
       setData(prev => {
-        const change = newData.value - previousValue;
+        const change = newData.temperature - previousValue;
         const percentage = previousValue === 0 ? 0 : (change / previousValue) * 100;
         
-        previousValue = newData.value;
+        previousValue = newData.temperature;
         lastUpdateTime = now;
 
         return {
-          current: newData.value,
+          current: newData.temperature,
           previous: prev.current,
           change: Number(change.toFixed(2)),
           percentage: Number(percentage.toFixed(2)),
-          period: timeDiff < 60000 ? '1分钟' : '5分钟'
+          period: timeDiff < 60000 ? '1分钟' : '5分钟',
+          type: '温度'
         };
       });
     });
 
     return () => {
-      socket.off('dataUpdate');
+      socket.off('sensorData');
     };
   }, [socket]);
 
@@ -59,12 +72,12 @@ const DataComparison: React.FC = () => {
   return (
     <Paper sx={{ p: 2, height: '100%' }}>
       <Typography variant="h6" gutterBottom>
-        数据比较
+        {data.type}数据比较
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Box>
           <Typography variant="body2" color="text.secondary">
-            当前值
+            当前{data.type}
           </Typography>
           <Typography variant="h4">
             {data.current.toFixed(2)}
@@ -86,7 +99,7 @@ const DataComparison: React.FC = () => {
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary">
-            上期值
+            上期{data.type}
           </Typography>
           <Typography variant="h4" color="text.secondary">
             {data.previous.toFixed(2)}

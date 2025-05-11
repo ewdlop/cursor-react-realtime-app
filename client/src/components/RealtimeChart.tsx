@@ -1,26 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { Paper, Typography } from '@mui/material';
 import { LineChart } from '@mui/x-charts';
-import io from 'socket.io-client';
+import { useSocket } from '../contexts/SocketContext';
+
+interface SensorData {
+  temperature: number;
+  humidity: number;
+  pressure: number;
+  voltage: number;
+  current: number;
+  power: number;
+  timestamp: string;
+}
 
 const RealtimeChart: React.FC = () => {
-  const [data, setData] = useState<number[]>([]);
+  const [temperatureData, setTemperatureData] = useState<number[]>([]);
+  const [humidityData, setHumidityData] = useState<number[]>([]);
+  const [pressureData, setPressureData] = useState<number[]>([]);
   const [timestamps, setTimestamps] = useState<string[]>([]);
+  const socket = useSocket();
 
   useEffect(() => {
-    const socket = io('http://localhost:5001');
-
-    socket.on('dataUpdate', (newData: { value: number }) => {
-      setData((prevData) => [...prevData, newData.value].slice(-20));
-      setTimestamps((prevTimestamps) => 
-        [...prevTimestamps, new Date().toLocaleTimeString()].slice(-20)
-      );
+    socket.on('sensorData', (newData: SensorData) => {
+      setTemperatureData((prev) => [...prev, newData.temperature].slice(-20));
+      setHumidityData((prev) => [...prev, newData.humidity].slice(-20));
+      setPressureData((prev) => [...prev, newData.pressure].slice(-20));
+      setTimestamps((prev) => [...prev, new Date(newData.timestamp).toLocaleTimeString()].slice(-20));
     });
 
     return () => {
-      socket.disconnect();
+      socket.off('sensorData');
     };
-  }, []);
+  }, [socket]);
 
   return (
     <Paper sx={{ p: 2, height: '100%' }}>
@@ -30,7 +41,18 @@ const RealtimeChart: React.FC = () => {
       <LineChart
         series={[
           {
-            data: data,
+            data: temperatureData,
+            label: '温度',
+            area: true,
+          },
+          {
+            data: humidityData,
+            label: '湿度',
+            area: true,
+          },
+          {
+            data: pressureData,
+            label: '压力',
             area: true,
           },
         ]}

@@ -8,4 +8,6 @@ export { default as AlertPanel } from './AlertPanel';
 export { default as TrendAnalysis } from './TrendAnalysis';
 export { default as DataCounter } from './DataCounter';
 export { default as DataPrediction } from './DataPrediction';
-export { default as DataComparison } from './DataComparison'; 
+export { default as DataComparison } from './DataComparison';
+export { default as SensorData } from './SensorData';
+export { default as SystemStatus } from './SystemStatus'; 

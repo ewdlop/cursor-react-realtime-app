@@ -2,11 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { Paper, Typography, Box } from '@mui/material';
 import { useSocket } from '../contexts/SocketContext';
 
+interface SensorData {
+  temperature: number;
+  humidity: number;
+  pressure: number;
+  voltage: number;
+  current: number;
+  power: number;
+  timestamp: string;
+}
+
 interface CounterData {
   total: number;
   high: number;
   low: number;
   average: number;
+  type: string;
 }
 
 const DataCounter: React.FC = () => {
@@ -14,36 +25,38 @@ const DataCounter: React.FC = () => {
     total: 0,
     high: 0,
     low: 0,
-    average: 0
+    average: 0,
+    type: '温度'
   });
   const socket = useSocket();
 
   useEffect(() => {
-    socket.on('dataUpdate', (newData: { value: number }) => {
+    socket.on('sensorData', (newData: SensorData) => {
       setData(prev => {
         const newTotal = prev.total + 1;
-        const newHigh = Math.max(prev.high, newData.value);
-        const newLow = prev.low === 0 ? newData.value : Math.min(prev.low, newData.value);
-        const newAverage = ((prev.average * prev.total) + newData.value) / newTotal;
+        const newHigh = Math.max(prev.high, newData.temperature);
+        const newLow = prev.low === 0 ? newData.temperature : Math.min(prev.low, newData.temperature);
+        const newAverage = ((prev.average * prev.total) + newData.temperature) / newTotal;
 
         return {
           total: newTotal,
           high: newHigh,
           low: newLow,
-          average: Number(newAverage.toFixed(2))
+          average: Number(newAverage.toFixed(2)),
+          type: '温度'
         };
       });
     });
 
     return () => {
-      socket.off('dataUpdate');
+      socket.off('sensorData');
     };
   }, [socket]);
 
   return (
     <Paper sx={{ p: 2, height: '100%' }}>
       <Typography variant="h6" gutterBottom>
-        数据统计
+        {data.type}数据统计
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Box>
@@ -56,7 +69,7 @@ const DataCounter: React.FC = () => {
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary">
-            最高值
+            最高{data.type}
           </Typography>
           <Typography variant="h4" color="success.main">
             {data.high.toFixed(2)}
@@ -64,7 +77,7 @@ const DataCounter: React.FC = () => {
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary">
-            最低值
+            最低{data.type}
           </Typography>
           <Typography variant="h4" color="error.main">
             {data.low.toFixed(2)}
@@ -72,7 +85,7 @@ const DataCounter: React.FC = () => {
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary">
-            平均值
+            平均{data.type}
           </Typography>
           <Typography variant="h4" color="info.main">
             {data.average}

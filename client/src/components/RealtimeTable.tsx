@@ -9,35 +9,31 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
-import io from 'socket.io-client';
+import { useSocket } from '../contexts/SocketContext';
 
-interface DataPoint {
+interface SensorData {
+  temperature: number;
+  humidity: number;
+  pressure: number;
+  voltage: number;
+  current: number;
+  power: number;
   timestamp: string;
-  value: number;
-  status: string;
 }
 
 const RealtimeTable: React.FC = () => {
-  const [data, setData] = useState<DataPoint[]>([]);
+  const [data, setData] = useState<SensorData[]>([]);
+  const socket = useSocket();
 
   useEffect(() => {
-    const socket = io('http://localhost:5001');
-
-    socket.on('dataUpdate', (newData: { value: number }) => {
-      setData((prevData) => {
-        const newDataPoint: DataPoint = {
-          timestamp: new Date().toLocaleTimeString(),
-          value: newData.value,
-          status: newData.value > 50 ? '高' : '低',
-        };
-        return [newDataPoint, ...prevData].slice(0, 10);
-      });
+    socket.on('sensorData', (newData: SensorData) => {
+      setData((prevData) => [newData, ...prevData].slice(0, 10));
     });
 
     return () => {
-      socket.disconnect();
+      socket.off('sensorData');
     };
-  }, []);
+  }, [socket]);
 
   return (
     <Paper sx={{ p: 2, height: '100%' }}>
@@ -49,16 +45,24 @@ const RealtimeTable: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>时间</TableCell>
-              <TableCell align="right">数值</TableCell>
-              <TableCell align="right">状态</TableCell>
+              <TableCell align="right">温度 (°C)</TableCell>
+              <TableCell align="right">湿度 (%)</TableCell>
+              <TableCell align="right">压力 (hPa)</TableCell>
+              <TableCell align="right">电压 (V)</TableCell>
+              <TableCell align="right">电流 (A)</TableCell>
+              <TableCell align="right">功率 (W)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {data.map((row, index) => (
               <TableRow key={index}>
-                <TableCell>{row.timestamp}</TableCell>
-                <TableCell align="right">{row.value}</TableCell>
-                <TableCell align="right">{row.status}</TableCell>
+                <TableCell>{new Date(row.timestamp).toLocaleTimeString()}</TableCell>
+                <TableCell align="right">{row.temperature.toFixed(2)}</TableCell>
+                <TableCell align="right">{row.humidity.toFixed(2)}</TableCell>
+                <TableCell align="right">{row.pressure.toFixed(2)}</TableCell>
+                <TableCell align="right">{row.voltage.toFixed(2)}</TableCell>
+                <TableCell align="right">{row.current.toFixed(2)}</TableCell>
+                <TableCell align="right">{row.power.toFixed(2)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

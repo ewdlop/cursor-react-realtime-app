@@ -4,11 +4,22 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import { useSocket } from '../contexts/SocketContext';
 
+interface SensorData {
+  temperature: number;
+  humidity: number;
+  pressure: number;
+  voltage: number;
+  current: number;
+  power: number;
+  timestamp: string;
+}
+
 interface PredictionData {
   current: number;
   predicted: number;
   confidence: number;
   trend: 'up' | 'down' | 'stable';
+  type: string;
 }
 
 const DataPrediction: React.FC = () => {
@@ -16,29 +27,31 @@ const DataPrediction: React.FC = () => {
     current: 0,
     predicted: 0,
     confidence: 0,
-    trend: 'stable'
+    trend: 'stable',
+    type: '温度'
   });
   const socket = useSocket();
 
   useEffect(() => {
-    socket.on('dataUpdate', (newData: { value: number }) => {
+    socket.on('sensorData', (newData: SensorData) => {
       setData(prev => {
         // 简单的预测算法：基于当前值和历史趋势
-        const predicted = newData.value + (newData.value - prev.current) * 0.5;
-        const confidence = Math.min(100, Math.max(0, 100 - Math.abs(predicted - newData.value) * 2));
-        const trend = predicted > newData.value ? 'up' : predicted < newData.value ? 'down' : 'stable';
+        const predicted = newData.temperature + (newData.temperature - prev.current) * 0.5;
+        const confidence = Math.min(100, Math.max(0, 100 - Math.abs(predicted - newData.temperature) * 2));
+        const trend = predicted > newData.temperature ? 'up' : predicted < newData.temperature ? 'down' : 'stable';
 
         return {
-          current: newData.value,
+          current: newData.temperature,
           predicted: Number(predicted.toFixed(2)),
           confidence: Number(confidence.toFixed(1)),
-          trend
+          trend,
+          type: '温度'
         };
       });
     });
 
     return () => {
-      socket.off('dataUpdate');
+      socket.off('sensorData');
     };
   }, [socket]);
 
@@ -56,12 +69,12 @@ const DataPrediction: React.FC = () => {
   return (
     <Paper sx={{ p: 2, height: '100%' }}>
       <Typography variant="h6" gutterBottom>
-        数据预测
+        {data.type}数据预测
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Box>
           <Typography variant="body2" color="text.secondary">
-            当前值
+            当前{data.type}
           </Typography>
           <Typography variant="h4">
             {data.current.toFixed(2)}
@@ -69,7 +82,7 @@ const DataPrediction: React.FC = () => {
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary">
-            预测值
+            预测{data.type}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {data.trend === 'up' ? (

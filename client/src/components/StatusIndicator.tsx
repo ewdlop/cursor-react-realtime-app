@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Paper, Typography, Box, CircularProgress } from '@mui/material';
-import io from 'socket.io-client';
+import { useSocket } from '../contexts/SocketContext';
+
+interface SystemStatus {
+  cpu: number;
+  memory: number;
+  disk: number;
+  network: {
+    upload: number;
+    download: number;
+  };
+  timestamp: string;
+}
 
 const StatusIndicator: React.FC = () => {
   const [status, setStatus] = useState<'online' | 'offline'>('offline');
   const [lastUpdate, setLastUpdate] = useState<string>('');
+  const socket = useSocket();
 
   useEffect(() => {
-    const socket = io('http://localhost:5001');
-
     socket.on('connect', () => {
       setStatus('online');
     });
@@ -17,14 +27,16 @@ const StatusIndicator: React.FC = () => {
       setStatus('offline');
     });
 
-    socket.on('dataUpdate', () => {
-      setLastUpdate(new Date().toLocaleTimeString());
+    socket.on('systemStatus', (data: SystemStatus) => {
+      setLastUpdate(new Date(data.timestamp).toLocaleTimeString());
     });
 
     return () => {
-      socket.disconnect();
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('systemStatus');
     };
-  }, []);
+  }, [socket]);
 
   return (
     <Paper sx={{ p: 2, height: '100%' }}>

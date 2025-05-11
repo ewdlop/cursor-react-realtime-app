@@ -2,12 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { Paper, Typography, Box } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-import io from 'socket.io-client';
+import { useSocket } from '../contexts/SocketContext';
+
+interface SensorData {
+  temperature: number;
+  humidity: number;
+  pressure: number;
+  voltage: number;
+  current: number;
+  power: number;
+  timestamp: string;
+}
 
 interface Stats {
   current: number;
   previous: number;
   change: number;
+  type: string;
 }
 
 const StatsCard: React.FC = () => {
@@ -15,23 +26,24 @@ const StatsCard: React.FC = () => {
     current: 0,
     previous: 0,
     change: 0,
+    type: '温度'
   });
+  const socket = useSocket();
 
   useEffect(() => {
-    const socket = io('http://localhost:5001');
-
-    socket.on('dataUpdate', (newData: { value: number }) => {
+    socket.on('sensorData', (newData: SensorData) => {
       setStats((prev) => ({
-        current: newData.value,
+        current: newData.temperature,
         previous: prev.current,
-        change: newData.value - prev.current,
+        change: newData.temperature - prev.current,
+        type: '温度'
       }));
     });
 
     return () => {
-      socket.disconnect();
+      socket.off('sensorData');
     };
-  }, []);
+  }, [socket]);
 
   const isPositive = stats.change >= 0;
 
@@ -58,7 +70,7 @@ const StatsCard: React.FC = () => {
           </Typography>
         </Box>
         <Typography variant="body2" color="text.secondary">
-          较上次更新
+          {stats.type}较上次更新
         </Typography>
       </Box>
     </Paper>

@@ -3,35 +3,46 @@ import { Paper, Typography } from '@mui/material';
 import { PieChart } from '@mui/x-charts';
 import { useSocket } from '../contexts/SocketContext';
 
+interface SensorData {
+  temperature: number;
+  humidity: number;
+  pressure: number;
+  voltage: number;
+  current: number;
+  power: number;
+  timestamp: string;
+}
+
 interface DistributionData {
   category: string;
   value: number;
 }
 
 const DataDistribution: React.FC = () => {
-  const [data, setData] = useState<DistributionData[]>([]);
+  const [data, setData] = useState<DistributionData[]>([
+    { category: '温度', value: 0 },
+    { category: '湿度', value: 0 },
+    { category: '压力', value: 0 },
+    { category: '电压', value: 0 },
+    { category: '电流', value: 0 },
+    { category: '功率', value: 0 }
+  ]);
   const socket = useSocket();
 
   useEffect(() => {
-    socket.on('dataUpdate', (newData: { value: number }) => {
-      setData((prevData) => {
-        const category = newData.value > 50 ? '高' : '低';
-        const existingCategory = prevData.find(d => d.category === category);
-        
-        if (existingCategory) {
-          return prevData.map(d => 
-            d.category === category 
-              ? { ...d, value: d.value + 1 }
-              : d
-          );
-        }
-        
-        return [...prevData, { category, value: 1 }];
-      });
+    socket.on('sensorData', (newData: SensorData) => {
+      setData([
+        { category: '温度', value: newData.temperature },
+        { category: '湿度', value: newData.humidity },
+        { category: '压力', value: newData.pressure },
+        { category: '电压', value: newData.voltage },
+        { category: '电流', value: newData.current },
+        { category: '功率', value: newData.power }
+      ]);
     });
 
     return () => {
-      socket.off('dataUpdate');
+      socket.off('sensorData');
     };
   }, [socket]);
 

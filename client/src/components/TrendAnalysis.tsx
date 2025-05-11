@@ -4,11 +4,22 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import { useSocket } from '../contexts/SocketContext';
 
+interface SensorData {
+  temperature: number;
+  humidity: number;
+  pressure: number;
+  voltage: number;
+  current: number;
+  power: number;
+  timestamp: string;
+}
+
 interface TrendData {
   current: number;
   previous: number;
   change: number;
   trend: 'up' | 'down' | 'stable';
+  type: string;
 }
 
 const TrendAnalysis: React.FC = () => {
@@ -16,25 +27,27 @@ const TrendAnalysis: React.FC = () => {
     current: 0,
     previous: 0,
     change: 0,
-    trend: 'stable'
+    trend: 'stable',
+    type: '温度'
   });
   const socket = useSocket();
 
   useEffect(() => {
-    socket.on('dataUpdate', (newData: { value: number }) => {
+    socket.on('sensorData', (newData: SensorData) => {
       setTrend(prev => {
-        const change = newData.value - prev.current;
+        const change = newData.temperature - prev.current;
         return {
-          current: newData.value,
+          current: newData.temperature,
           previous: prev.current,
           change,
-          trend: change > 0 ? 'up' : change < 0 ? 'down' : 'stable'
+          trend: change > 0 ? 'up' : change < 0 ? 'down' : 'stable',
+          type: '温度'
         };
       });
     });
 
     return () => {
-      socket.off('dataUpdate');
+      socket.off('sensorData');
     };
   }, [socket]);
 
@@ -67,7 +80,7 @@ const TrendAnalysis: React.FC = () => {
         </Box>
         <Box>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            变化趋势
+            {trend.type}变化趋势
           </Typography>
           <LinearProgress
             variant="determinate"
@@ -77,7 +90,7 @@ const TrendAnalysis: React.FC = () => {
           />
         </Box>
         <Typography variant="body2" color="text.secondary">
-          较上次变化: {trend.change > 0 ? '+' : ''}{trend.change.toFixed(2)}
+          {trend.type}较上次变化: {trend.change > 0 ? '+' : ''}{trend.change.toFixed(2)}
         </Typography>
       </Box>
     </Paper>
