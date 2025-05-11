@@ -1,10 +1,9 @@
 import React from 'react';
-import { Grid, Container, Box, Typography } from '@mui/material';
+import { Box, Paper } from '@mui/material';
 import {
   RealtimeChart,
   RealtimeTable,
   StatusIndicator,
-  StatsCard,
   DataDistribution,
   AlertPanel,
   TrendAnalysis,
@@ -12,56 +11,58 @@ import {
   DataPrediction,
   DataComparison,
   SensorData,
-  SystemStatus
+  SystemStatus,
 } from './';
 
 const Dashboard: React.FC = () => {
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          实时数据仪表板
-        </Typography>
-        <Grid container spacing={3}>
-          <Grid sx={{ xs: 12, md: 3 }}>
-            <StatsCard />
-          </Grid>
-          <Grid sx={{ xs: 12, md: 3 }}>
-            <StatusIndicator />
-          </Grid>
-          <Grid sx={{ xs: 12, md: 3 }}>
-            <TrendAnalysis />
-          </Grid>
-          <Grid sx={{ xs: 12, md: 3 }}>
-            <DataDistribution />
-          </Grid>
-          <Grid sx={{ xs: 12, md: 4 }}>
-            <DataCounter />
-          </Grid>
-          <Grid sx={{ xs: 12, md: 4 }}>
-            <DataPrediction />
-          </Grid>
-          <Grid sx={{ xs: 12, md: 4 }}>
-            <DataComparison />
-          </Grid>
-          <Grid sx={{ xs: 12, md: 8 }}>
-            <RealtimeChart />
-          </Grid>
-          <Grid sx={{ xs: 12, md: 4 }}>
-            <AlertPanel />
-          </Grid>
-          <Grid sx={{ xs: 12, md: 6 }}>
-            <SensorData />
-          </Grid>
-          <Grid sx={{ xs: 12, md: 6 }}>
-            <SystemStatus />
-          </Grid>
-          <Grid sx={{ xs: 12 }}>
-            <RealtimeTable />
-          </Grid>
-        </Grid>
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+      {/* 顶部卡片区域 */}
+      <Box sx={{ width: { xs: '100%', md: 'calc(50% - 12px)', lg: 'calc(25% - 12px)' } }}>
+        <DataCounter />
       </Box>
-    </Container>
+      <Box sx={{ width: { xs: '100%', md: 'calc(50% - 12px)', lg: 'calc(25% - 12px)' } }}>
+        <StatusIndicator />
+      </Box>
+      <Box sx={{ width: { xs: '100%', md: 'calc(50% - 12px)', lg: 'calc(25% - 12px)' } }}>
+        <TrendAnalysis />
+      </Box>
+      <Box sx={{ width: { xs: '100%', md: 'calc(50% - 12px)', lg: 'calc(25% - 12px)' } }}>
+        <DataDistribution />
+      </Box>
+      <Box sx={{ width: { xs: '100%', md: 'calc(50% - 12px)', lg: 'calc(25% - 12px)' } }}>
+        <DataCounter />
+      </Box>
+      <Box sx={{ width: { xs: '100%', md: 'calc(50% - 12px)', lg: 'calc(25% - 12px)' } }}>
+        <DataPrediction />
+      </Box>
+      <Box sx={{ width: { xs: '100%', md: 'calc(50% - 12px)', lg: 'calc(25% - 12px)' } }}>
+        <DataComparison />
+      </Box>
+
+      {/* 中间区域 */}
+      <Box sx={{ width: { xs: '100%', md: 'calc(66.66% - 12px)' } }}>
+        <Paper sx={{ p: 2, height: '100%' }}>
+          <RealtimeChart />
+        </Paper>
+      </Box>
+      <Box sx={{ width: { xs: '100%', md: 'calc(33.33% - 12px)' } }}>
+        <AlertPanel />
+      </Box>
+
+      {/* 底部区域 */}
+      <Box sx={{ width: { xs: '100%', md: 'calc(50% - 12px)' } }}>
+        <SensorData />
+      </Box>
+      <Box sx={{ width: { xs: '100%', md: 'calc(50% - 12px)' } }}>
+        <SystemStatus />
+      </Box>
+      <Box sx={{ width: '100%' }}>
+        <Paper sx={{ p: 2 }}>
+          <RealtimeTable />
+        </Paper>
+      </Box>
+    </Box>
   );
 };
 
