@@ -1,104 +1,139 @@
-# 实时数据仪表板应用
+# 实时数据仪表板 / Real-time Data Dashboard
 
-这是一个使用现代技术栈构建的实时数据仪表板应用，支持实时数据更新和可视化展示。
+一个使用 React、TypeScript、Socket.IO 和 Material-UI 构建的实时数据仪表板应用。
 
-## 技术栈
+A real-time data dashboard application built with React, TypeScript, Socket.IO, and Material-UI.
 
-- 前端：
-  - React
+## 功能特点 / Features
+
+- 实时数据更新 / Real-time data updates
+- 响应式设计 / Responsive design
+- 多种数据可视化组件 / Multiple data visualization components
+- 实时告警系统 / Real-time alert system
+- 数据趋势分析 / Data trend analysis
+- 数据分布统计 / Data distribution statistics
+
+## 技术栈 / Tech Stack
+
+- 前端 / Frontend:
+  - React 18
   - TypeScript
   - Material-UI
   - Socket.IO Client
   - @mui/x-charts
 
-- 后端：
+- 后端 / Backend:
   - Node.js
   - Express
   - Socket.IO
   - TypeScript
 
-## 功能特点
+## 组件说明 / Components
 
-- 实时数据更新
-- 响应式设计
-- 暗色主题界面
-- 实时数据图表展示
-- 最新数据状态显示
+1. 实时图表 / RealtimeChart
+   - 使用折线图显示实时数据变化
+   - 支持数据缩放和平移
+   - 自动更新数据点
 
-## 安装说明
+2. 实时表格 / RealtimeTable
+   - 显示最新的数据记录
+   - 支持数据排序
+   - 自动更新最新数据
 
-### 前置要求
+3. 状态指示器 / StatusIndicator
+   - 显示系统当前状态
+   - 实时更新状态变化
+   - 使用不同颜色标识状态
 
-- Node.js (v14.0.0 或更高版本)
-- npm 或 yarn
+4. 统计卡片 / StatsCard
+   - 显示关键统计数据
+   - 实时更新数值
+   - 支持自定义指标
 
-### 安装步骤
+5. 数据分布 / DataDistribution
+   - 使用饼图显示数据分布
+   - 支持交互式高亮
+   - 实时更新分布情况
 
-1. 克隆项目
+6. 告警面板 / AlertPanel
+   - 显示实时告警信息
+   - 支持多级告警
+   - 自动更新告警状态
+
+7. 趋势分析 / TrendAnalysis
+   - 显示数据变化趋势
+   - 计算变化率
+   - 可视化趋势方向
+
+## 安装说明 / Installation
+
+1. 克隆仓库 / Clone the repository:
 ```bash
-git clone [项目地址]
-cd [项目目录]
+git clone [repository-url]
+cd [repository-name]
 ```
 
-2. 安装后端依赖
+2. 安装依赖 / Install dependencies:
 ```bash
+# 安装后端依赖 / Install backend dependencies
 cd server
 npm install
-```
 
-3. 安装前端依赖
-```bash
+# 安装前端依赖 / Install frontend dependencies
 cd ../client
 npm install
 ```
 
-## 运行应用
-
-1. 启动后端服务器
+3. 启动应用 / Start the application:
 ```bash
+# 启动后端服务 / Start backend server
 cd server
 npm run dev
-```
-服务器将在 http://localhost:5001 运行
 
-2. 启动前端应用
-```bash
-cd client
+# 启动前端服务 / Start frontend server
+cd ../client
 npm start
 ```
-前端应用将在 http://localhost:3000 运行
 
-## 项目结构
+## 环境要求 / Requirements
+
+- Node.js >= 14
+- npm >= 6
+- 现代浏览器 / Modern web browser
+
+## 开发说明 / Development
+
+- 后端服务运行在 5001 端口 / Backend server runs on port 5001
+- 前端开发服务器运行在 3000 端口 / Frontend dev server runs on port 3000
+- 使用 Socket.IO 进行实时通信 / Uses Socket.IO for real-time communication
+- 支持热重载 / Supports hot reloading
+
+## 项目结构 / Project Structure
 
 ```
-├── client/                 # 前端项目目录
-│   ├── src/               # 源代码
-│   ├── public/            # 静态资源
-│   └── package.json       # 前端依赖配置
+├── client/                 # 前端代码 / Frontend code
+│   ├── src/
+│   │   ├── components/    # React 组件 / React components
+│   │   ├── contexts/      # React 上下文 / React contexts
+│   │   └── App.tsx        # 主应用组件 / Main app component
+│   └── package.json
 │
-└── server/                # 后端项目目录
-    ├── src/              # 源代码
-    └── package.json      # 后端依赖配置
+└── server/                 # 后端代码 / Backend code
+    ├── src/
+    │   ├── routes/        # API 路由 / API routes
+    │   ├── services/      # 业务逻辑 / Business logic
+    │   └── index.ts       # 服务器入口 / Server entry
+    └── package.json
 ```
 
-## 使用说明
+## 贡献指南 / Contributing
 
-1. 打开浏览器访问 http://localhost:3000
-2. 仪表板将自动开始接收和显示实时数据
-3. 图表将每秒钟更新一次
-4. 最新数据面板会显示最近接收到的数据点
+1. Fork 项目 / Fork the project
+2. 创建特性分支 / Create your feature branch
+3. 提交更改 / Commit your changes
+4. 推送到分支 / Push to the branch
+5. 创建 Pull Request / Create a Pull Request
 
-## 开发说明
-
-- 后端使用 Socket.IO 每秒生成一次随机数据
-- 前端使用 Material-UI 的图表组件展示数据
-- 数据保留最近 20 个数据点
-- 支持实时数据更新和自动清理
-
-## 贡献指南
-
-欢迎提交 Pull Request 或创建 Issue 来改进项目。
-
-## 许可证
+## 许可证 / License
 
 MIT 
